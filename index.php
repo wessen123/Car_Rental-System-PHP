@@ -2,7 +2,9 @@
 <!DOCTYPE html>
 <html>
 <?php 
-
+session_start(); 
+require 'connection.php';
+$conn = Connect();
 ?>
 <head>
     <meta charset="utf-8">
@@ -61,7 +63,10 @@
                 </ul>
             </div>
             
-           
+            <?php
+                }
+                else if (isset($_SESSION['login_customer'])){
+            ?>
             <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
                 <ul class="nav navbar-nav">
                     <li>
@@ -84,7 +89,10 @@
                 </ul>
             </div>
 
-         
+            <?php
+            }
+                else {
+            ?>
 
             <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
                 <ul class="nav navbar-nav">
@@ -131,7 +139,44 @@
     <div id="sec2" style="color: #777;background-color:white;text-align:center;padding:50px 80px;text-align: justify;">
         <h3 style="text-align:center;">Available Cars</h3>
 <br>
+        <section class="menu-content">
+            <?php   
+            $sql1 = "SELECT * FROM cars WHERE car_availability='yes'";
+            $result1 = mysqli_query($conn,$sql1);
 
+            if(mysqli_num_rows($result1) > 0) {
+                while($row1 = mysqli_fetch_assoc($result1)){
+                    $car_id = $row1["car_id"];
+                    $car_name = $row1["car_name"];
+                    $ac_price = $row1["ac_price"];
+                    $ac_price_per_day = $row1["ac_price_per_day"];
+                    $non_ac_price = $row1["non_ac_price"];
+                    $non_ac_price_per_day = $row1["non_ac_price_per_day"];
+                    $car_img = $row1["car_img"];
+               
+                    ?>
+            <a href="booking.php?id=<?php echo($car_id) ?>">
+            <div class="sub-menu">
+            
+
+            <img class="card-img-top" src="<?php echo $car_img; ?>" alt="Card image cap">
+            <h5><b> <?php echo $car_name; ?> </b></h5>
+            <h6> AC Fare: <?php echo ("Rs. " . $ac_price . "/km & Br." . $ac_price_per_day . "/day"); ?></h6>
+            <h6> Non-AC Fare: <?php echo ("Rs. " . $non_ac_price . "/km & Rs." . $non_ac_price_per_day . "/day"); ?></h6>
+
+            
+            </div> 
+            </a>
+            <?php }}
+            else {
+                ?>
+<h1> No cars available :( </h1>
+                <?php
+            }
+            ?>                                   
+        </section>
+                    
+    </div>
 
     <div class="bgimg-2">
         <div class="caption">
@@ -147,15 +192,40 @@
             <hr>
             <div class="row">
                 <div class="col-sm-6">
-                    <h5>© Addis Car Rentals</h5>
+                    <h5>© <?php echo date("Y"); ?> Car Rentals</h5>
                 </div>
                 
             </div>
         </div>
     </footer>
     <script>
-      
-   
+        function myMap() {
+            myCenter = new google.maps.LatLng(25.614744, 85.128489);
+            var mapOptions = {
+                center: myCenter,
+                zoom: 12,
+                scrollwheel: true,
+                draggable: true,
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+            var map = new google.maps.Map(document.getElementById("googleMap"), mapOptions);
+
+            var marker = new google.maps.Marker({
+                position: myCenter,
+            });
+            marker.setMap(map);
+        }
+    </script>
+    <script>
+        function sendGaEvent(category, action, label) {
+            ga('send', {
+                hitType: 'event',
+                eventCategory: category,
+                eventAction: action,
+                eventLabel: label
+            });
+        };
+    </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCCuoe93lQkgRaC7FB8fMOr_g1dmMRwKng&callback=myMap" type="text/javascript"></script>
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
